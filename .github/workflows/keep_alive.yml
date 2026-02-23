@@ -12,11 +12,6 @@ jobs:
     steps:
       - name: Send API Request
         run: |
-          # 1. 認証システムのヘルスチェック (一番確実)
-          curl -i -X GET "${{ secrets.SUPABASE_URL }}/auth/v1/health" \
-          -H "apikey: ${{ secrets.secrets.SUPABASE_ANON_KEY }}"
-
-          # 2. 念のためREST API側も叩いておく (どちらか一方が動けばOK)
           curl -i -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/" \
           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
           -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
