@@ -4,7 +4,7 @@ on:
   schedule:
     # 毎日 0:00 (UTC) に実行（日本時間 9:00）
     - cron: '0 0 * * *'
-  workflow_dispatch: # 手動でテスト実行するためのボタンを表示
+  workflow_dispatch: # 手動実行ボタン用
 
 jobs:
   ping:
@@ -12,12 +12,12 @@ jobs:
     steps:
       - name: Send API Request
         run: |
-          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/healthcheck?select=*" \
+          # 1. 認証システムのヘルスチェック (一番確実)
+          curl -i -X GET "${{ secrets.SUPABASE_URL }}/auth/v1/health" \
+          -H "apikey: ${{ secrets.secrets.SUPABASE_ANON_KEY }}"
+
+          # 2. 念のためREST API側も叩いておく (どちらか一方が動けばOK)
+          curl -i -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/" \
           -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
           -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}"
-
-          curl -X GET "${{ secrets.SUPABASE_URL }}/rest/v1/users?select=*&limit=1" \
-          -H "apikey: ${{ secrets.SUPABASE_URL }}" \
-          -H "Authorization: Bearer ${{ secrets.SUPABASE_URL }}"
-
 
